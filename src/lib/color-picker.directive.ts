@@ -1,9 +1,18 @@
-import { OnInit, OnChanges, Directive, Input, Output, EventEmitter, ElementRef, ViewContainerRef, ReflectiveInjector, ComponentFactoryResolver } from '@angular/core';
+import {
+    ComponentFactoryResolver,
+    Directive,
+    ElementRef,
+    EventEmitter,
+    Input,
+    OnChanges,
+    OnInit,
+    Output,
+    ReflectiveInjector,
+    ViewContainerRef
+} from '@angular/core';
 
-import { ColorPickerService } from './color-picker.service';
-import { ColorPickerComponent } from './color-picker.component';
-
-import { SliderPosition, SliderDimension} from './helpers';
+import {ColorPickerService} from './color-picker.service';
+import {ColorPickerComponent} from './color-picker.component';
 
 @Directive({
     selector: '[colorPicker]',
@@ -17,38 +26,43 @@ export class ColorPickerDirective implements OnInit, OnChanges {
     @Output('colorPickerChange') colorPickerChange = new EventEmitter<string>(true);
     @Input('cpToggle') cpToggle: boolean;
     @Output('cpToggleChange') cpToggleChange = new EventEmitter<boolean>(true);
-    @Input('cpPosition') cpPosition: string = 'right';
-    @Input('cpPositionOffset') cpPositionOffset: string = '0%';
-    @Input('cpPositionRelativeToArrow') cpPositionRelativeToArrow: boolean = false;
-    @Input('cpOutputFormat') cpOutputFormat: string = 'hex';
-    @Input('cpPresetLabel') cpPresetLabel: string = 'Preset colors';
+    @Input('cpPosition') cpPosition = 'right';
+    @Input('cpPositionOffset') cpPositionOffset = '0%';
+    @Input('cpPositionRelativeToArrow') cpPositionRelativeToArrow = false;
+    @Input('cpOutputFormat') cpOutputFormat = 'hex';
+    @Input('cpPresetLabel') cpPresetLabel = 'Preset colors';
     @Input('cpPresetColors') cpPresetColors: Array<string>;
-    @Input('cpCancelButton') cpCancelButton: boolean = false;
-    @Input('cpCancelButtonClass') cpCancelButtonClass: string = 'cp-cancel-button-class';
-    @Input('cpCancelButtonText') cpCancelButtonText: string = 'Cancel';
-    @Input('cpOKButton') cpOKButton: boolean = false;
-    @Input('cpOKButtonClass') cpOKButtonClass: string = 'cp-ok-button-class';
-    @Input('cpOKButtonText') cpOKButtonText: string = 'OK';
-    @Input('cpFallbackColor') cpFallbackColor: string = '#fff';
-    @Input('cpHeight') cpHeight: string = 'auto';
-    @Input('cpWidth') cpWidth: string = '230px';
+    @Input('cpCancelButton') cpCancelButton = false;
+    @Input('cpCancelButtonClass') cpCancelButtonClass = 'cp-cancel-button-class';
+    @Input('cpCancelButtonText') cpCancelButtonText = 'Cancel';
+    @Input('cpOKButton') cpOKButton = false;
+    @Input('cpOKButtonClass') cpOKButtonClass = 'cp-ok-button-class';
+    @Input('cpOKButtonText') cpOKButtonText = 'OK';
+    @Input('cpFallbackColor') cpFallbackColor = '#fff';
+    @Input('cpHeight') cpHeight = 'auto';
+    @Input('cpWidth') cpWidth = '230px';
     @Input('cpIgnoredElements') cpIgnoredElements: any = [];
-    @Input('cpDialogDisplay') cpDialogDisplay: string = 'popup';
-    @Input('cpSaveClickOutside') cpSaveClickOutside: boolean = true;
-    @Input('cpAlphaChannel') cpAlphaChannel: string = 'hex6';
+    @Input('cpDialogDisplay') cpDialogDisplay = 'popup';
+    @Input('cpSaveClickOutside') cpSaveClickOutside = true;
+    @Input('cpAlphaChannel') cpAlphaChannel = 'hex6';
 
     private dialog: any;
     private created: boolean;
-    private ignoreChanges: boolean = false;
+    private ignoreChanges = false;
 
-    constructor(private vcRef: ViewContainerRef, private el: ElementRef, private service: ColorPickerService, private cfr: ComponentFactoryResolver) {
+    constructor(private vcRef: ViewContainerRef, private el: ElementRef,
+                private service: ColorPickerService, private cfr: ComponentFactoryResolver) {
         this.created = false;
     }
 
     ngOnChanges(changes: any): void {
         if (changes.cpToggle) {
-            if (changes.cpToggle.currentValue) this.openDialog();
-            if (!changes.cpToggle.currentValue && this.dialog) this.dialog.closeColorPicker();
+            if (changes.cpToggle.currentValue) {
+                this.openDialog();
+            }
+            if (!changes.cpToggle.currentValue && this.dialog) {
+                this.dialog.closeColorPicker();
+            }
         }
         if (changes.colorPicker) {
             if (this.dialog && !this.ignoreChanges) {
@@ -60,7 +74,7 @@ export class ColorPickerDirective implements OnInit, OnChanges {
             }
             this.ignoreChanges = false;
         }
-        if (changes.cpPresetLabel || changes.cpPresetColors) {
+        if (changes.cpPresetLabel ||  changes.cpPresetColors) {
             if (this.dialog) {
                 this.dialog.setPresetConfig(this.cpPresetLabel, this.cpPresetColors);
             }
@@ -69,11 +83,15 @@ export class ColorPickerDirective implements OnInit, OnChanges {
 
     ngOnInit() {
         let hsva = this.service.stringToHsva(this.colorPicker);
-        if (hsva === null) hsva = this.service.stringToHsva(this.colorPicker, true);
+        if (hsva === null) {
+            hsva = this.service.stringToHsva(this.colorPicker, true);
+        }
         if (hsva == null) {
             hsva = this.service.stringToHsva(this.cpFallbackColor);
         }
-        this.colorPickerChange.emit(this.service.outputFormat(hsva, this.cpOutputFormat, this.cpAlphaChannel === 'hex8'));
+        this.colorPickerChange.emit(
+            ColorPickerService.outputFormat(hsva, this.cpOutputFormat, this.cpAlphaChannel === 'hex8')
+        );
     }
 
     onClick() {
@@ -99,9 +117,9 @@ export class ColorPickerDirective implements OnInit, OnChanges {
         }
     }
 
-    colorChanged(value: string, ignore: boolean = true) {
+    colorChanged(value: string, ignore = true) {
         this.ignoreChanges = ignore;
-        this.colorPickerChange.emit(value)
+        this.colorPickerChange.emit(value);
     }
 
     changeInput(value: string) {

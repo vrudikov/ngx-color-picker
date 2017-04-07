@@ -15,7 +15,7 @@ export class TextDirective {
         if (this.rg === undefined) {
             this.newValue.emit(value);
         } else {
-            let numeric = parseFloat(value)
+            let numeric = parseFloat(value);
             if (!isNaN(numeric) && numeric >= 0 && numeric <= this.rg) {
                 this.newValue.emit({ v: numeric, rg: this.rg });
             }
@@ -39,8 +39,8 @@ export class SliderDirective {
     private listenerStop: any;
 
     constructor(private el: ElementRef) {
-        this.listenerMove = (event: any) => { this.move(event) };
-        this.listenerStop = () => { this.stop() };
+        this.listenerMove = (event: any) => { this.move(event); };
+        this.listenerStop = () => { this.stop(); };
     }
 
     setCursor(event: any) {
@@ -51,7 +51,7 @@ export class SliderDirective {
 
         if (this.rgX !== undefined && this.rgY !== undefined) {
             this.newValue.emit({ s: x / width, v: (1 - y / height), rgX: this.rgX, rgY: this.rgY });
-        } else if (this.rgX === undefined && this.rgY !== undefined) {//ready to use vertical sliders
+        } else if (this.rgX === undefined && this.rgY !== undefined) { // ready to use vertical sliders
             this.newValue.emit({ v: y / height, rg: this.rgY });
         } else {
             this.newValue.emit({ v: x / width, rg: this.rgX });
@@ -79,10 +79,14 @@ export class SliderDirective {
     }
 
     getX(event: any): number {
-        return (event.pageX !== undefined ? event.pageX : event.touches[0].pageX) - this.el.nativeElement.getBoundingClientRect().left - window.pageXOffset;
+        return (event.pageX !== undefined ?
+                event.pageX :
+                event.touches[0].pageX) - this.el.nativeElement.getBoundingClientRect().left - window.pageXOffset;
     }
     getY(event: any): number {
-        return (event.pageY !== undefined ? event.pageY : event.touches[0].pageY) - this.el.nativeElement.getBoundingClientRect().top - window.pageYOffset;
+        return (event.pageY !== undefined ?
+                event.pageY :
+                event.touches[0].pageY) - this.el.nativeElement.getBoundingClientRect().top - window.pageYOffset;
     }
 }
 

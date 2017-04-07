@@ -54,8 +54,8 @@ export class ColorPickerComponent implements OnInit, AfterViewInit {
     private listenerMouseDown: any;
     private listenerResize: any;
 
-    private dialogArrowSize: number = 10;
-    private dialogArrowOffset: number = 15;
+    private dialogArrowSize = 10;
+    private dialogArrowOffset = 15;
 
     @ViewChild('hueSlider') hueSlider: any;
     @ViewChild('alphaSlider') alphaSlider: any;
@@ -63,12 +63,13 @@ export class ColorPickerComponent implements OnInit, AfterViewInit {
 
     constructor(private el: ElementRef, private cdr: ChangeDetectorRef, private service: ColorPickerService) { }
 
-    setDialog(instance: any, elementRef: ElementRef, color: any, cpPosition: string, cpPositionOffset: string,
-        cpPositionRelativeToArrow: boolean, cpOutputFormat: string, cpPresetLabel: string, cpPresetColors: Array<string>,
-        cpCancelButton: boolean, cpCancelButtonClass: string, cpCancelButtonText: string,
-        cpOKButton: boolean, cpOKButtonClass: string, cpOKButtonText: string,
-        cpHeight: string, cpWidth: string,
-        cpIgnoredElements: any, cpDialogDisplay: string, cpSaveClickOutside: boolean, cpAlphaChannel: string) {
+    setDialog(instance: any, elementRef: ElementRef, color: any,
+              cpPosition: string, cpPositionOffset: string, cpPositionRelativeToArrow: boolean,
+              cpOutputFormat: string, cpPresetLabel: string, cpPresetColors: Array<string>,
+              cpCancelButton: boolean, cpCancelButtonClass: string, cpCancelButtonText: string,
+              cpOKButton: boolean, cpOKButtonClass: string, cpOKButtonText: string,
+              cpHeight: string, cpWidth: string, cpIgnoredElements: any,
+              cpDialogDisplay: string, cpSaveClickOutside: boolean, cpAlphaChannel: string) {
         this.directiveInstance = instance;
         this.initialColor = color;
         this.directiveElementRef = elementRef;
@@ -113,8 +114,8 @@ export class ColorPickerComponent implements OnInit, AfterViewInit {
         } else {
             this.format = 0;
         }
-        this.listenerMouseDown = (event: any) => { this.onMouseDown(event) };
-        this.listenerResize = () => { this.onResize() };
+        this.listenerMouseDown = (event: any) => { this.onMouseDown(event); };
+        this.listenerResize = () => { this.onResize(); };
         this.openDialog(this.initialColor, false);
     }
 
@@ -139,7 +140,7 @@ export class ColorPickerComponent implements OnInit, AfterViewInit {
         this.cpPresetColors = cpPresetColors;
     }
 
-    openDialog(color: any, emit: boolean = true) {
+    openDialog(color: any, emit = true) {
         this.setInitialColor(color);
         this.setColorFromString(color, emit);
         this.openColorPicker();
@@ -159,7 +160,7 @@ export class ColorPickerComponent implements OnInit, AfterViewInit {
         }
     }
 
-    setColorFromString(value: string, emit: boolean = true) {
+    setColorFromString(value: string, emit = true) {
         let hsva: Hsva;
         if (this.cpAlphaChannel === 'hex8') {
             hsva = this.service.stringToHsva(value, true);
@@ -176,12 +177,13 @@ export class ColorPickerComponent implements OnInit, AfterViewInit {
     }
 
     onMouseDown(event: any) {
-        if ((!this.isDescendant(this.el.nativeElement, event.target)
+        if ((!ColorPickerComponent.isDescendant(this.el.nativeElement, event.target)
             && event.target != this.directiveElementRef.nativeElement &&
-            this.cpIgnoredElements.filter((item: any) => item === event.target).length === 0) && this.cpDialogDisplay === 'popup') {
+            this.cpIgnoredElements.filter((item: any) => item === event.target).length === 0)
+            && this.cpDialogDisplay === 'popup') {
             if (!this.cpSaveClickOutside) {
                 this.setColorFromString(this.initialColor, false);
-                this.directiveInstance.colorChanged(this.initialColor)
+                this.directiveInstance.colorChanged(this.initialColor);
             }
             this.closeColorPicker();
         }
@@ -217,7 +219,7 @@ export class ColorPickerComponent implements OnInit, AfterViewInit {
         let node = this.directiveElementRef.nativeElement, position = 'static';
         let parentNode: any = null;
         while (node !== null && node.tagName !== 'HTML') {
-            position = window.getComputedStyle(node).getPropertyValue("position");
+            position = window.getComputedStyle(node).getPropertyValue('position');
             if (position !== 'static' && parentNode === null) {
                 parentNode = node;
             }
@@ -226,14 +228,15 @@ export class ColorPickerComponent implements OnInit, AfterViewInit {
             }
             node = node.parentNode;
         }
+        let boxDirective;
         if (position !== 'fixed') {
-            var boxDirective = this.createBox(this.directiveElementRef.nativeElement, true);
-            if (parentNode === null) { parentNode = node }
-            var boxParent = this.createBox(parentNode, true);
+            boxDirective = ColorPickerComponent.createBox(this.directiveElementRef.nativeElement, true);
+            if (parentNode === null) { parentNode = node; }
+            const boxParent = ColorPickerComponent.createBox(parentNode, true);
             this.top = boxDirective.top - boxParent.top;
             this.left = boxDirective.left - boxParent.left;
         } else {
-            var boxDirective = this.createBox(this.directiveElementRef.nativeElement, false);
+            boxDirective = ColorPickerComponent.createBox(this.directiveElementRef.nativeElement, false);
             this.top = boxDirective.top;
             this.left = boxDirective.left;
             this.position = 'fixed';
@@ -255,16 +258,16 @@ export class ColorPickerComponent implements OnInit, AfterViewInit {
     }
 
     setSaturation(val: { v: number, rg: number }) {
-        let hsla = this.service.hsva2hsla(this.hsva);
+        let hsla = ColorPickerService.hsva2hsla(this.hsva);
         hsla.s = val.v / val.rg;
-        this.hsva = this.service.hsla2hsva(hsla);
+        this.hsva = ColorPickerService.hsla2hsva(hsla);
         this.update();
     }
 
     setLightness(val: { v: number, rg: number }) {
-        let hsla = this.service.hsva2hsla(this.hsva);
+        let hsla = ColorPickerService.hsva2hsla(this.hsva);
         hsla.l = val.v / val.rg;
-        this.hsva = this.service.hsla2hsva(hsla);
+        this.hsva = ColorPickerService.hsla2hsva(hsla);
         this.update();
     }
 
@@ -279,21 +282,21 @@ export class ColorPickerComponent implements OnInit, AfterViewInit {
     }
 
     setR(val: { v: number, rg: number }) {
-        let rgba = this.service.hsvaToRgba(this.hsva);
+        let rgba = ColorPickerService.hsvaToRgba(this.hsva);
         rgba.r = val.v / val.rg;
-        this.hsva = this.service.rgbaToHsva(rgba);
+        this.hsva = ColorPickerService.rgbaToHsva(rgba);
         this.update();
     }
     setG(val: { v: number, rg: number }) {
-        let rgba = this.service.hsvaToRgba(this.hsva);
+        let rgba = ColorPickerService.hsvaToRgba(this.hsva);
         rgba.g = val.v / val.rg;
-        this.hsva = this.service.rgbaToHsva(rgba);
+        this.hsva = ColorPickerService.rgbaToHsva(rgba);
         this.update();
     }
     setB(val: { v: number, rg: number }) {
-        let rgba = this.service.hsvaToRgba(this.hsva);
+        let rgba = ColorPickerService.hsvaToRgba(this.hsva);
         rgba.b = val.v / val.rg;
-        this.hsva = this.service.rgbaToHsva(rgba);
+        this.hsva = ColorPickerService.rgbaToHsva(rgba);
         this.update();
     }
 
@@ -311,15 +314,21 @@ export class ColorPickerComponent implements OnInit, AfterViewInit {
         return this.format;
     }
 
-    update(emit: boolean = true) {
+    update(emit = true) {
         if (this.sliderDimMax) {
-            let hsla = this.service.hsva2hsla(this.hsva);
-            let rgba = this.service.denormalizeRGBA(this.service.hsvaToRgba(this.hsva));
-            let hueRgba = this.service.denormalizeRGBA(this.service.hsvaToRgba(new Hsva(this.hsva.h, 1, 1, 1)));
+            let hsla = ColorPickerService.hsva2hsla(this.hsva);
+            let rgba = ColorPickerService.denormalizeRGBA(ColorPickerService.hsvaToRgba(this.hsva));
+            let hueRgba = ColorPickerService.denormalizeRGBA(
+                ColorPickerService.hsvaToRgba(new Hsva(this.hsva.h, 1, 1, 1)));
 
-            this.hslaText = new Hsla(Math.round((hsla.h) * 360), Math.round(hsla.s * 100), Math.round(hsla.l * 100), Math.round(hsla.a * 100) / 100);
+            this.hslaText = new Hsla(
+                Math.round((hsla.h) * 360),
+                Math.round(hsla.s * 100),
+                Math.round(hsla.l * 100),
+                Math.round(hsla.a * 100) / 100
+            );
             this.rgbaText = new Rgba(rgba.r, rgba.g, rgba.b, Math.round(rgba.a * 100) / 100);
-            this.hexText = this.service.hexText(rgba, this.cpAlphaChannel === 'hex8');
+            this.hexText = ColorPickerService.hexText(rgba, this.cpAlphaChannel === 'hex8');
 
             this.alphaSliderColor = 'rgb(' + rgba.r + ',' + rgba.g + ',' + rgba.b + ')';
             this.hueSliderColor = 'rgb(' + hueRgba.r + ',' + hueRgba.g + ',' + hueRgba.b + ')';
@@ -329,11 +338,13 @@ export class ColorPickerComponent implements OnInit, AfterViewInit {
             }
 
             let lastOutput = this.outputColor;
-            this.outputColor = this.service.outputFormat(this.hsva, this.cpOutputFormat, this.cpAlphaChannel === 'hex8');
-            this.selectedColor = this.service.outputFormat(this.hsva, 'rgba', false);
+            this.outputColor = ColorPickerService.outputFormat(
+                this.hsva, this.cpOutputFormat, this.cpAlphaChannel === 'hex8');
+            this.selectedColor = ColorPickerService.outputFormat(this.hsva, 'rgba', false);
 
-            this.slider = new SliderPosition((this.hsva.h) * this.sliderDimMax.h - 8, this.hsva.s * this.sliderDimMax.s - 8,
-                (1 - this.hsva.v) * this.sliderDimMax.v - 8, this.hsva.a * this.sliderDimMax.a - 8)
+            this.slider = new SliderPosition((this.hsva.h) * this.sliderDimMax.h - 8,
+                this.hsva.s * this.sliderDimMax.s - 8,
+                (1 - this.hsva.v) * this.sliderDimMax.v - 8, this.hsva.a * this.sliderDimMax.a - 8);
 
             if (emit && lastOutput !== this.outputColor) {
                 this.directiveInstance.colorChanged(this.outputColor);
@@ -341,7 +352,7 @@ export class ColorPickerComponent implements OnInit, AfterViewInit {
         }
     }
 
-    isDescendant(parent: any, child: any): boolean {
+    static isDescendant(parent: any, child: any): boolean {
         let node: any = child.parentNode;
         while (node !== null) {
             if (node === parent) {
@@ -352,7 +363,7 @@ export class ColorPickerComponent implements OnInit, AfterViewInit {
         return false;
     }
 
-    createBox(element: any, offset: boolean): any {
+    static createBox(element: any, offset: boolean): any {
         return {
             top: element.getBoundingClientRect().top + (offset ? window.pageYOffset : 0),
             left: element.getBoundingClientRect().left + (offset ? window.pageXOffset : 0),
